@@ -1,0 +1,3 @@
+Hay que alocarlo a dos niveles de distancia del /libs de openFrameworks. Por ejemplo: openFrameworks/apps/Desarrollos-Patricio/eden...
+
+
