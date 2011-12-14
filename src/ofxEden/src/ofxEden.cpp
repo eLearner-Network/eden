@@ -40,7 +40,8 @@ void ofxEden::_setup(ofEventArgs &e){
 	data.loadXml();
 	
     cout << "Starting openNI Drivers for Kinect Sensor" << endl;
-    openNI.setupFromXML("openni/config/ofxopenni_config.xml",false);
+    context.setup();
+	depth.setup(&context);
 	width = 640;
 	height = 480;
 	numPixels = width * height;
@@ -89,60 +90,69 @@ void ofxEden::_update(ofEventArgs &e) {
 	data.update();
     
 	// Update Kinect Information
-	openNI.update();
-    if (openNI.isNewFrame()){
-        // Extract a the raw depth image from openNI drivers...
-        ofShortPixels pixels = openNI.getDepthRawPixels();
-        unsigned char * blobPixels = blobImage.getPixels();
-        unsigned short * depthRaw = pixels.getPixels();
-        float * depthFloatPixels = depthFloatImage.getPixels();
+    context.update();
+    depth.update();
+    
+    // Extract a the raw depth image from openNI drivers...
+    xn::DepthGenerator	depth_generator;
+	xn::DepthMetaData	dmd;
+    
+	depth_generator = depth.getXnDepthGenerator();
+	depth_generator.GetMetaData(dmd);
+    
+	const XnDepthPixel* depthRaw = dmd.Data();
+    
+    //ofShortPixels pixels = openNI.getDepthRawPixels();
+    //unsigned short * depthRaw = pixels.getPixels();
+    
+    unsigned char * blobPixels = blobImage.getPixels();
+    float * depthFloatPixels = depthFloatImage.getPixels();
 	
-        // ... and extract the range it neads
-        int farThreshold = data.topAltitude;
-        int nearThreshold = data.lowAltitude;
+    // ... and extract the range it neads
+    int farThreshold = data.topAltitude;
+    int nearThreshold = data.lowAltitude;
 	
-        for(int i = 0; i < numPixels; i++, depthRaw++) {
-            if(*depthRaw <= nearThreshold && *depthRaw >= farThreshold){
+    for(int i = 0; i < numPixels; i++, depthRaw++) {
+        if(*depthRaw <= nearThreshold && *depthRaw >= farThreshold){
+            blobPixels[i] = 0;
+            depthFloatPixels[i] += ofMap(*depthRaw, nearThreshold, farThreshold, 0.0f,1.0f);
+            depthFloatPixels[i] *= 0.5;
+        } else if ( *depthRaw < nearThreshold ){
+            if ( *depthRaw == 0)
                 blobPixels[i] = 0;
-                depthFloatPixels[i] += ofMap(*depthRaw, nearThreshold, farThreshold, 0.0f,1.0f);
-                depthFloatPixels[i] *= 0.5;
-            } else if ( *depthRaw < nearThreshold ){
-                if ( *depthRaw == 0)
-                    blobPixels[i] = 0;
-                else 
-                    blobPixels[i] = 255;
-            } else if ( *depthRaw > farThreshold ){
-                blobPixels[i] = 0;
-                depthFloatPixels[i] = 0.0f;
-            } else {
-                blobPixels[i] = 0;
-            }
-        
-            int x = i%width;
-            int y = i/height;
-		
-            if ( depthFloatPixels[i] <= data.waterLevel){
-                if (ofRandom(100000) < 1.0)
-                    atmosphere.setHotAt(x,y,0.5);
-            } else {
-                if (ofRandom(100000) < 1.0)
-                    atmosphere.setColdAt(x,y,0.5);
-            }
+            else 
+                blobPixels[i] = 255;
+        } else if ( *depthRaw > farThreshold ){
+            blobPixels[i] = 0;
+            depthFloatPixels[i] = 0.0f;
+        } else {
+            blobPixels[i] = 0;
         }
         
-        // Save the results in a blobImage for the sky and depthFloatImage for the heightmap
-        blobImage.flagImageChanged();
-        depthFloatImage.setFromPixels(depthFloatPixels, width, height, OF_IMAGE_GRAYSCALE);
+        int x = i%width;
+        int y = i/height;
+		
+        if ( depthFloatPixels[i] <= data.waterLevel){
+            if (ofRandom(100000) < 1.0)
+                atmosphere.setHotAt(x,y,0.5);
+        } else {
+            if (ofRandom(100000) < 1.0)
+                atmosphere.setColdAt(x,y,0.5);
+        }
+    }
         
-        // PROCESS DATA
-        // -----------------------------------------------------
-        // Atmosphere
-        atmosphere.update(blobImage, depthFloatImage);
-        ofDisableAlphaBlending();
+    // Save the results in a blobImage for the sky and depthFloatImage for the heightmap
+    blobImage.flagImageChanged();
+    depthFloatImage.setFromPixels(depthFloatPixels, width, height, OF_IMAGE_GRAYSCALE);
         
-        // Geosphere
-        geosphere.update( depthFloatImage );
-	}
+    // PROCESS DATA
+    // -----------------------------------------------------
+    // Atmosphere
+    atmosphere.update(blobImage, depthFloatImage);
+    ofDisableAlphaBlending();
+        
+    // Geosphere
+    geosphere.update( depthFloatImage );
     
 	// Hydrosphere
 	hydrosphere.update( atmosphere.getTextureReference(), geosphere );

@@ -101,7 +101,9 @@ private:
 	// INPUT
 	// ---------------------------------------------
 	// Kinect ( openNI -> openCV )
-	ofxOpenNI           openNI;
+	ofxOpenNIContext	context;
+	ofxDepthGenerator	depth;
+    
 	ofxCvGrayscaleImage	blobImage;			// This goes to Atmosphere System
     ofFloatImage		depthFloatImage;	// This goes to Geosphere Syste
 	
