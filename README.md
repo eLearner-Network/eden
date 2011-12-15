@@ -18,6 +18,6 @@ Macports is required to be installed. Please check http://www.macports.org/ for 
 
 * Download and install last GitHub openFramework version  
 * You can switch or improve ofxOpenNI version by downloading/uploading and installing ofxOpenNI from github.com/gameoverhack/ofxOpenNI
-* On src/ofxOpenNI you will find two subdirectories, one for windows and one for osx. copy the content inside and replace the openni directory on your bin/data one by that one.
+* On src/ofxOpenNI you will find two subdirectories, one for windows and one for mac. copy the content inside and replace the "openni" directory on your bin/data by that one.
 * Open the project that correspond to your OS
 * Compile
