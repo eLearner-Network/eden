@@ -13,16 +13,16 @@
 //-------------------------------------------------------------- Constructor/Destructor
 
 ofxEden::ofxEden() {
-	ofAddListener(ofEvents.mouseMoved, this, &ofxEden::_mouseMoved);
-	ofAddListener(ofEvents.mousePressed, this, &ofxEden::_mousePressed);
-	ofAddListener(ofEvents.mouseDragged, this, &ofxEden::_mouseDragged);
-	ofAddListener(ofEvents.mouseReleased, this, &ofxEden::_mouseReleased);
-	ofAddListener(ofEvents.keyPressed, this, &ofxEden::_keyPressed);
-	ofAddListener(ofEvents.keyReleased, this, &ofxEden::_keyReleased);
-	ofAddListener(ofEvents.setup, this, &ofxEden::_setup);
-	ofAddListener(ofEvents.update, this, &ofxEden::_update);
-	ofAddListener(ofEvents.draw, this, &ofxEden::_draw);
-    ofAddListener(ofEvents.exit , this, &ofxEden::_exit);
+	ofAddListener(ofEvents().mouseMoved, this, &ofxEden::_mouseMoved);
+	ofAddListener(ofEvents().mousePressed, this, &ofxEden::_mousePressed);
+	ofAddListener(ofEvents().mouseDragged, this, &ofxEden::_mouseDragged);
+	ofAddListener(ofEvents().mouseReleased, this, &ofxEden::_mouseReleased);
+	ofAddListener(ofEvents().keyPressed, this, &ofxEden::_keyPressed);
+	ofAddListener(ofEvents().keyReleased, this, &ofxEden::_keyReleased);
+	ofAddListener(ofEvents().setup, this, &ofxEden::_setup);
+	ofAddListener(ofEvents().update, this, &ofxEden::_update);
+	ofAddListener(ofEvents().draw, this, &ofxEden::_draw);
+    ofAddListener(ofEvents().exit , this, &ofxEden::_exit);
 	
 	bGui	= false;
 	bDebug	= false;
@@ -39,9 +39,12 @@ void ofxEden::_setup(ofEventArgs &e){
     cout << "Loading xml data Settings" << endl;
 	data.loadXml();
 	
-    cout << "Starting openNI Drivers for Kinect Sensor" << endl;
-    context.setup();
-	depth.setup(&context);
+    cout << "Starting Kinect" << endl;
+    kinect.init();
+	//kinect.init(true); // shows infrared instead of RGB video image
+	//kinect.init(false, false); // disable video image (faster fps)
+	kinect.open();
+    
 	width = 640;
 	height = 480;
 	numPixels = width * height;
@@ -90,78 +93,73 @@ void ofxEden::_update(ofEventArgs &e) {
 	data.update();
     
 	// Update Kinect Information
-    context.update();
-    depth.update();
+    kinect.update();
     
-    // Extract a the raw depth image from openNI drivers...
-    xn::DepthGenerator	depth_generator;
-	xn::DepthMetaData	dmd;
+    if(kinect.isFrameNew()) {
+        
+        float *depthRaw = kinect.getDistancePixels();
     
-	depth_generator = depth.getXnDepthGenerator();
-	depth_generator.GetMetaData(dmd);
+        numPixels = width * height; 
     
-	const XnDepthPixel* depthRaw = dmd.Data();
-    
-    //ofShortPixels pixels = openNI.getDepthRawPixels();
-    //unsigned short * depthRaw = pixels.getPixels();
-    
-    unsigned char * blobPixels = blobImage.getPixels();
-    float * depthFloatPixels = depthFloatImage.getPixels();
+        unsigned char * blobPixels = blobImage.getPixels();
+        float * depthFloatPixels = depthFloatImage.getPixels();
 	
-    // ... and extract the range it neads
-    int farThreshold = data.topAltitude;
-    int nearThreshold = data.lowAltitude;
+        // ... and extract the range it neads
+        int farThreshold = data.topAltitude;
+        int nearThreshold = data.lowAltitude;
 	
-    for(int i = 0; i < numPixels; i++, depthRaw++) {
-        if(*depthRaw <= nearThreshold && *depthRaw >= farThreshold){
-            blobPixels[i] = 0;
-            depthFloatPixels[i] += ofMap(*depthRaw, nearThreshold, farThreshold, 0.0f,1.0f);
-            depthFloatPixels[i] *= 0.5;
-        } else if ( *depthRaw < nearThreshold ){
-            if ( *depthRaw == 0)
+        for(int i = 0; i < numPixels; i++, depthRaw++) {
+            if(*depthRaw <= nearThreshold && *depthRaw >= farThreshold){
                 blobPixels[i] = 0;
-            else 
-                blobPixels[i] = 255;
-        } else if ( *depthRaw > farThreshold ){
-            blobPixels[i] = 0;
-            depthFloatPixels[i] = 0.0f;
-        } else {
-            blobPixels[i] = 0;
-        }
+                depthFloatPixels[i] += ofMap(*depthRaw, nearThreshold, farThreshold, 0.0f,1.0f);
+                depthFloatPixels[i] *= 0.5;
+            } else if ( *depthRaw < nearThreshold ){
+                if ( *depthRaw == 0)
+                    blobPixels[i] = 0;
+                else 
+                    blobPixels[i] = 255;
+            } else if ( *depthRaw > farThreshold ){
+                blobPixels[i] = 0;
+                depthFloatPixels[i] = 0.0f;
+            } else {
+                blobPixels[i] = 0;
+            }
         
-        int x = i%width;
-        int y = i/height;
+            int x = i%width;
+            int y = i/height;
 		
-        if ( depthFloatPixels[i] <= data.waterLevel){
-            if (ofRandom(100000) < 1.0)
-                atmosphere.setHotAt(x,y,0.5);
-        } else {
-            if (ofRandom(100000) < 1.0)
-                atmosphere.setColdAt(x,y,0.5);
+            if ( depthFloatPixels[i] <= data.waterLevel){
+                if (ofRandom(100000) < 1.0)
+                    atmosphere.setHotAt(x,y,0.5);
+            } else {
+                if (ofRandom(100000) < 1.0)
+                    atmosphere.setColdAt(x,y,0.5);
+            }
         }
-    }
         
-    // Save the results in a blobImage for the sky and depthFloatImage for the heightmap
-    blobImage.flagImageChanged();
-    depthFloatImage.setFromPixels(depthFloatPixels, width, height, OF_IMAGE_GRAYSCALE);
+        // Save the results in a blobImage for the sky and depthFloatImage for the heightmap
+        blobImage.flagImageChanged();
+        depthFloatImage.setFromPixels(depthFloatPixels, width, height, OF_IMAGE_GRAYSCALE );
+        depthFloatImage.reloadTexture();
         
-    // PROCESS DATA
-    // -----------------------------------------------------
-    // Atmosphere
-    atmosphere.update(blobImage, depthFloatImage);
-    ofDisableAlphaBlending();
+        // PROCESS DATA
+        // -----------------------------------------------------
+        // Atmosphere
+        atmosphere.update(blobImage, depthFloatImage);
+        ofDisableAlphaBlending();
         
-    // Geosphere
-    geosphere.update( depthFloatImage );
+        // Geosphere
+        geosphere.update( depthFloatImage );
     
-	// Hydrosphere
-	hydrosphere.update( atmosphere.getTextureReference(), geosphere );
+        // Hydrosphere
+        hydrosphere.update( atmosphere.getTextureReference(), geosphere );
 	
-	// Biosphere
-	biosphere.update(hydrosphere.getTextureReference(), geosphere );
+        // Biosphere
+        biosphere.update(hydrosphere.getTextureReference(), geosphere );
 	
-	// FinalMix
-	textures.update(hydrosphere.getBlurTexture(), biosphere, geosphere);
+        // FinalMix
+        textures.update(hydrosphere.getBlurTexture(), biosphere, geosphere);
+    }
 }
 
 //-------------------------------------------------------------- Draw
@@ -297,8 +295,8 @@ void ofxEden::_draw(ofEventArgs &e){
 	if (bGui)
 		gui->draw();
 	ofPopStyle();
-	
-	//ofEnableAlphaBlending();
+    
+    //ofEnableAlphaBlending();
 	//ofSetColor(255, 255, 255,255);
 } 
 

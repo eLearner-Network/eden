@@ -10,6 +10,7 @@ void testApp::setup() {
 //--------------------------------------------------------------
 void testApp::update() {
 	ofSetWindowTitle(ofToString(ofGetFrameRate()));	
+
 }
 
 //--------------------------------------------------------------

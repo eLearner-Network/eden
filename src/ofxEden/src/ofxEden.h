@@ -13,7 +13,7 @@
 #include "ofMain.h"
 
 #include "ofxGui.h"
-#include "ofxOpenNI.h"
+#include "ofxKinect.h"
 #include "ofxOpenCv.h"
 
 #include "ofxEdenData.h"
@@ -100,9 +100,7 @@ private:
 	
 	// INPUT
 	// ---------------------------------------------
-	// Kinect ( openNI -> openCV )
-	ofxOpenNIContext	context;
-	ofxDepthGenerator	depth;
+	ofxKinect kinect;
     
 	ofxCvGrayscaleImage	blobImage;			// This goes to Atmosphere System
     ofFloatImage		depthFloatImage;	// This goes to Geosphere Syste

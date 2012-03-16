@@ -50,7 +50,7 @@ public:
     float   biosphereTimeStep, biosphereMaxDist, biosphereMinDist, biosphereMaxSpeed, biosphereMaxForce;
     float   biosphereSeparation, biosphereAlineation, biosphereCohesion;
     float   biosphereBorders;
-    //float   biosphereFlat, biosphereFood;
+    float   biosphereFlat, biosphereFood;
 	
 	int		terrainResolution;
 	

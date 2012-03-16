@@ -30,7 +30,6 @@ public:
     ofxWater    water;
 private:
     
-    
 	ofImage		snow;
 	ofImage		ground[2];
 	ofImage		rock[2];

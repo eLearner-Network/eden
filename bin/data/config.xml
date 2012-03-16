@@ -1,8 +1,8 @@
 <geosphere>
     <x>320</x>
     <y>0</y>
-    <top>553</top>
-    <low>619</low>
+    <top>735</top>
+    <low>1005</low>
     <blur>
         <passes>7</passes>
         <fade>1</fade>
@@ -36,7 +36,7 @@
     <x>640</x>
     <y>0</y>
     <water>
-        <level>0.0571429</level>
+        <level>0.0428571</level>
     </water>
     <absortion>
         <soil>0.121429</soil>

@@ -17,4 +17,5 @@ public:
 	void windowResized(int w, int h);
 
 	ofxEden				eden;
+    float time;
 };
