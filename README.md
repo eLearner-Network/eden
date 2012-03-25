@@ -1,23 +1,24 @@
-# MacOSX Pre-Requisit #
+# Eden
+
+Eden it´s migrating to ofxEden. A openFrameworks addon that simulates the a ecosystem from the surface of a sandBox.
+
+Now it´s using ofxComposer and ofxGui for a more intuitive and beautiful setup.
+
+
+## MacOSX Pre-Requisit
 
 Macports is required to be installed. Please check http://www.macports.org/ for its own dependencies and installation procedure. It requires XCode and would need to be installed on your Mac. Then: 
 
-```sudo port install libtool```
-```sudo port install libusb-devel +universal```
+```
+	sudo port install libtool
 
-# Linux Pre-Requisit #
+	sudo port install libusb-devel +universal
+```
 
-```sudo apt-get install cmake libglut3-dev pkg-config build-essential libxmu-dev libxi-dev libusb-1.0-0-dev```
+## Linux Pre-Requisit 
 
-# Installing need Drivers #
+```
 
-* Install last unstable openNI, NITE and PrimeSense drivers
-* Install SensorKinect drivers from https://github.com/avin2/SensorKinect
+	sudo apt-get install cmake libglut3-dev pkg-config build-essential libxmu-dev libxi-dev libusb-1.0-0-dev
 
-# Compilling #
-
-* Download and install last GitHub openFramework version  
-* You can switch or improve ofxOpenNI version by downloading/uploading and installing ofxOpenNI from github.com/gameoverhack/ofxOpenNI
-* On src/ofxOpenNI you will find two subdirectories, one for windows and one for mac. copy the content inside and replace the "openni" directory on your bin/data by that one.
-* Open the project that correspond to your OS
-* Compile
+```

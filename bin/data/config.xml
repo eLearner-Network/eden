@@ -78,10 +78,10 @@
     </flock>
 </biosphere>
 <textures>
-    <scale>1</scale>
+    <scale>1.27301</scale>
     <center>
-        <x>0</x>
-        <y>0</y>
+        <x>-18</x>
+        <y>15</y>
     </center>
     <mask>
         <point>
