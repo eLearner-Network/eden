@@ -11,8 +11,8 @@
 #define OFXEDENDATA
 
 #include "ofMain.h"
+#include "ofxGui.h"
 #include "ofxOsc.h"
-#include "ofxXmlSettings.h"
 
 #define SERVER_PORT 1984
 #define CLIENT_PORT 1985
@@ -21,44 +21,35 @@ class ofxEdenData {
 public:
 	ofxEdenData();
 	
-	void    loadXml(string filePath = "config.xml");
-	void    saveXml(string filePath = "config.xml");
-    
-    void    addMaskPoint(float _x, float _y);
-    void    delMaskPoint(int _nPoint);
-    
+    void    load();
+    void    save();
     void    update();
+    void    draw();
     
+    ofxPanel        gui;
+        
     ofxOscReceiver  receiver;
     ofxOscSender    sender;
     string          outHost;
     int             outPort;
-    
-	ofVec2f	atmosphereLoc, geosphereLoc, hydrosphereLoc, biosphereLoc;
-	string	shaderDir;
 	
-	int		topAltitude,lowAltitude, totalFrames, activeLayer;
+    ofxIntSlider    topAltitude,lowAltitude;
+    int             totalFrames, activeLayer;
 	
-	float	atmosphereCircularForce, atmosphereCircularAngle;
-    float   atmosphereTempDiss, atmosphereVelDiss, atmosphereDenDiss;
-	int		atmosphereResolution;
+	ofxFloatSlider	atmosphereCircularForce, atmosphereCircularAngle;
+    ofxFloatSlider  atmosphereTempDiss, atmosphereVelDiss, atmosphereDenDiss;
+	int   atmosphereResolution;
 	
-	float	waterLevel, absortionSoil, depresionFlow;
-	float	precipitationInclination,precipitationAltitud,precipitationCold,precipitationHumidity,precipitationAmount;
+	ofxFloatSlider	waterLevel, absortionSoil, depresionFlow;
+	ofxFloatSlider	precipitationInclination,precipitationAltitud,precipitationCold,precipitationHumidity,precipitationAmount;
 	
-	float	biosphereDiffU,biosphereDiffV,biosphereF,biosphereK;
-    float   biosphereTimeStep, biosphereMaxDist, biosphereMinDist, biosphereMaxSpeed, biosphereMaxForce;
-    float   biosphereSeparation, biosphereAlineation, biosphereCohesion;
-    float   biosphereBorders;
-    float   biosphereFlat, biosphereFood;
+	ofxFloatSlider	biosphereDiffU,biosphereDiffV,biosphereF,biosphereK;
+    ofxFloatSlider  biosphereTimeStep, biosphereMaxDist, biosphereMinDist, biosphereMaxSpeed, biosphereMaxForce;
+    ofxFloatSlider  biosphereSeparation, biosphereAlineation, biosphereCohesion;
+    ofxFloatSlider  biosphereBorders;
+    float           biosphereFlat, biosphereFood;
 	
-	int		terrainResolution;
-	
-	ofPoint	center;
-	float	scale;
-	
-    vector<ofPoint> maskCorners;
-	int		maskCornersSelected;
+	ofxIntSlider    terrainResolution;
 };
 
 #endif

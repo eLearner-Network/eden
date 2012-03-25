@@ -10,189 +10,60 @@
 
 ofxEdenData::ofxEdenData()
 { 
-    shaderDir = "shader/"; 
-    maskCornersSelected = -1;
     receiver.setup( SERVER_PORT );
     outHost = "127.0.0.1";
     outPort = 0;
     activeLayer = 0; // 0 -> ALL layers
 }
 
-void ofxEdenData::loadXml(string filePath)
-{
-    ofxXmlSettings XML;
+void ofxEdenData::load(){
+    gui.setPosition(0, 0);
+    gui.setup("Panel");
+    gui.add(atmosphereCircularForce.setup("Circ. force", 1.0, 0.0, 1.0 ));
+    gui.add(atmosphereCircularAngle.setup("Circ. angle", -82.9286, 0, -90.0));
+    gui.add(atmosphereTempDiss.setup("Temp. Diss.", 0.871429, 0.75, 1.0));
+    gui.add(atmosphereVelDiss.setup("Vel. Diss.", 0.928571, 0.75, 1.0));
+    gui.add(atmosphereDenDiss.setup("Den. Diss.", 0.999, 0.75, 1.0));
+    atmosphereResolution = 10;
     
-    if (XML.loadFile(filePath)){
-        maskCorners.clear();
-        
-        // Atmosphere
-        atmosphereLoc.x = XML.getValue("atmosphere:x",0);
-        atmosphereLoc.y = XML.getValue("atmosphere:y",0);
-        atmosphereResolution = XML.getValue("atmosphere:resolution",8);
-        atmosphereCircularForce = XML.getValue("atmosphere:circular:force",1.0);
-        atmosphereCircularAngle = XML.getValue("atmosphere:circular:angle",-2.0);
-        atmosphereTempDiss = XML.getValue("atmosphere:temperature:dissipation",0.99f);
-        atmosphereVelDiss = XML.getValue("atmosphere:velocity:dissipation",0.9f);
-        atmosphereDenDiss = XML.getValue("atmosphere:density:dissipation",0.999f);
-        
-        // Geosphere
-        geosphereLoc.x = XML.getValue("geosphere:x",0);
-        geosphereLoc.y = XML.getValue("geosphere:y",0);
-        topAltitude	= XML.getValue("geosphere:top",0);
-        lowAltitude	= XML.getValue("geosphere:low",0);
-        totalFrames = XML.getValue("geosphere:average:frames",0);
-        terrainResolution = XML.getValue("geosphere:terrain:resolution",8);
-        
-        // Hidrosphere
-        hydrosphereLoc.x = XML.getValue("hydrosphere:x",0);
-        hydrosphereLoc.y = XML.getValue("hydrosphere:y",0);
-        waterLevel = XML.getValue("hydrosphere:water:level",0.1);
-        
-        absortionSoil = XML.getValue("hydrosphere:absortion:soil",0.01);
-        depresionFlow = XML.getValue("hydrosphere:flow:depresion",0.03);
-        
-        precipitationAltitud = XML.getValue("hydrosphere:precipitation:necesary:altitud",0.0);
-        precipitationInclination = XML.getValue("hydrosphere:precipitation:necesary:inclination",1.0);
-        
-        precipitationCold = XML.getValue("hydrosphere:precipitation:necesary:cold",0.1);
-        precipitationHumidity = XML.getValue("hydrosphere:precipitation:necesary:humidity",0.1);
-        precipitationAmount = XML.getValue("hydrosphere:precipitation:amount",0.1);
-        
-        // Biosphere
-        biosphereLoc.x = XML.getValue("biosphere:vegetation:x",0);
-        biosphereLoc.y = XML.getValue("biosphere:vegetation:y",0);
-        biosphereDiffU = XML.getValue("biosphere:vegetation:diffU",0.25);
-        biosphereDiffV = XML.getValue("biosphere:vegetation:diffV",0.04);
-        biosphereK = XML.getValue("biosphere:vegetation:f",0.1);
-        biosphereF = XML.getValue("biosphere:vegetation:k",0.047);
-        
-        biosphereTimeStep = XML.getValue("biosphere:flock:TimeStep",0.005f);
-        biosphereMaxDist = XML.getValue("biosphere:flock:maxDist",0.030f);
-        biosphereMinDist = XML.getValue("biosphere:flock:minDist",0.025f);
-        biosphereMaxSpeed = XML.getValue("biosphere:flock:maxSpeed",3.0f);
-        biosphereMaxForce = XML.getValue("biosphere:flock:maxForce",0.005f);
-        
-        biosphereSeparation = XML.getValue("biosphere:flock:separation",1.5f);
-        biosphereAlineation = XML.getValue("biosphere:flock:alineation",1.0f);
-        biosphereCohesion = XML.getValue("biosphere:flock:cohesion",1.0f);
-        biosphereBorders = XML.getValue("biosphere:flock:borders",1.0f);
-        //biosphereFlat = XML.getValue("biosphere:flock:flat",1.0f);
-        //biosphereFood = XML.getValue("biosphere:flock:food",1.0);
-        
-        // Textures
-        XML.pushTag("textures");
-        scale = XML.getValue("scale",1.0); 
-        center.x = XML.getValue("center:x",0); 
-        center.y = XML.getValue("center:y",0); 
-        
-        XML.pushTag("mask");
-        int totalMaskCorners = XML.getNumTags("point");
-        for(int i = 0; i < totalMaskCorners; i++){
-            XML.pushTag("point",i);
-            addMaskPoint(XML.getValue("x", 0.0),XML.getValue("y", 0.0));
-            XML.popTag();
-        }
-        XML.popTag();
-        XML.popTag();
-        cout << maskCorners.size() << " total masking points" << endl;
-        
-    } else
-        cout << " [ FAIL ]" << endl;
-}
-
-void ofxEdenData::saveXml(string filePath)
-{
-    ofxXmlSettings XML;
+    gui.add(topAltitude.setup("Higher point", 735, 500, 1000));
+    gui.add(lowAltitude.setup("Lower point", 1005, 600, 1500));
+    gui.add(terrainResolution.setup("Terrain res.", 8, 1, 10));
+    totalFrames = 6;
     
-    if (XML.loadFile(filePath)){
-        // Atmosphere
-        XML.setValue("atmosphere:circular:force",atmosphereCircularForce);
-        XML.setValue("atmosphere:circular:angle",atmosphereCircularAngle);
-        XML.setValue("atmosphere:temperature:dissipation",atmosphereTempDiss);
-        XML.setValue("atmosphere:velocity:dissipation",atmosphereVelDiss);
-        XML.setValue("atmosphere:density:dissipation",atmosphereDenDiss);
-        
-        // Geosphere
-        XML.setValue("geosphere:top",topAltitude);
-        XML.setValue("geosphere:low",lowAltitude);
-        XML.setValue("geosphere:terrain:resolution",terrainResolution);
-        
-        // Hydrosphere
-        XML.setValue("hydrosphere:water:level",waterLevel);
-        XML.setValue("hydrosphere:absortion:soil",absortionSoil);
-        XML.setValue("hydrosphere:flow:depresion",depresionFlow);
-        XML.setValue("hydrosphere:precipitation:necesary:altitud",precipitationAltitud);
-        XML.setValue("hydrosphere:precipitation:necesary:inclination",precipitationInclination);
-        XML.setValue("hydrosphere:precipitation:necesary:cold",precipitationCold);
-        XML.setValue("hydrosphere:precipitation:necesary:humidity",precipitationHumidity);
-        XML.setValue("hydrosphere:precipitation:amount",precipitationAmount);
-        
-        // Biosphere
-        XML.setValue("biosphere:vegetation:diffU",biosphereDiffU);
-        XML.setValue("biosphere:vegetation:diffV",biosphereDiffV);
-        XML.setValue("biosphere:vegetation:f",biosphereK);
-        XML.setValue("biosphere:vegetation:k",biosphereF);
-        
-        XML.setValue("biosphere:flock:TimeStep",biosphereTimeStep);
-        XML.setValue("biosphere:flock:maxDist",biosphereMaxDist);
-        XML.setValue("biosphere:flock:minDist",biosphereMinDist);
-        XML.setValue("biosphere:flock:maxSpeed",biosphereMaxSpeed);
-        XML.setValue("biosphere:flock:maxForce",biosphereMaxForce);
-        
-        XML.setValue("biosphere:flock:separation",biosphereSeparation);
-        XML.setValue("biosphere:flock:alineation",biosphereAlineation);
-        XML.setValue("biosphere:flock:cohesion",biosphereCohesion);
-        XML.setValue("biosphere:flock:borders",biosphereBorders);
-        //XML.setValue("biosphere:flock:flat",biosphereFlat);
-        //XML.setValue("biosphere:flock:food",biosphereFood);
-        
-        // Textures
-        XML.pushTag("textures");
-        XML.setValue("scale",scale); 
-        XML.setValue("center:x",center.x); 
-        XML.setValue("center:y",center.y);
-        
-        XML.pushTag("mask");
-        int totalMaskCorners = XML.getNumTags("point");
-        
-        for(int i = 0; i < maskCorners.size(); i++){
-            int tagNum = i;
-            
-            if (i >= totalMaskCorners)
-                tagNum = XML.addTag("point");
-            
-            XML.setValue("point:x",(float)maskCorners[i].x, tagNum);
-            XML.setValue("point:y",(float)maskCorners[i].y, tagNum);
-        }
-        
-        if (maskCorners.size() < totalMaskCorners){
-            for(int i = maskCorners.size() - 1; i < totalMaskCorners; i++){
-                XML.setValue("point:x",0, i);
-                XML.setValue("point:y",0, i);
-            }
-        }
-        
-        XML.popTag();
-        XML.popTag();
-    } else
-        cout << " [ FAIL ]" << endl;
-    XML.saveFile();
+    gui.add(waterLevel.setup("Water level", 0.0428571, 0.0f, 1.0f));
+    gui.add(precipitationAmount.setup("Amount of rain", 1.02857, 0.0f, 2.0f));
+    gui.add(precipitationHumidity.setup("Min humidity", 0.15, 0.0f, 1.0f));
+    gui.add(precipitationCold.setup("Min cold", 0.221429, 0.0f, 1.0f));
+    gui.add(precipitationInclination.setup("Min Inclin.", 0.471429, 0.0f, 1.0f));
+    gui.add(precipitationAltitud.setup("Min Alt.", 0.207143, 0.0f, 1.0f));
+    gui.add(absortionSoil.setup("Soil Absor.", 0.121429, 0.0f, 1.0f));
+    gui.add(depresionFlow.setup("Flow on Dep.", 0.442857, 0.0f, 1.0f));
+    
+    gui.add(biosphereDiffU.setup("Diff U", 0.239286, 0.0, 0.5));
+    gui.add(biosphereDiffV.setup("Diff V", 0.0535714, 0.0, 0.5));
+    gui.add(biosphereF.setup("F", 0.0285714, 0.0, 0.5));
+    gui.add(biosphereK.setup("K", 0.0821429, 0.0, 0.5));
+    gui.add(biosphereMinDist.setup("Min Dist", 0.0771429, 0.0, 1.0));
+    gui.add(biosphereMaxDist.setup("Max Dist", 0.0114286, 0.0, 1.0));
+    gui.add(biosphereMaxSpeed.setup("Max Speed", 3, 0.0, 6.0));
+    gui.add(biosphereMaxForce.setup("Max Force", 0.05, 0.0, 0.1));
+    gui.add(biosphereSeparation.setup("Separation", 2.95714, 0.0, 3.0));
+    gui.add(biosphereAlineation.setup("Alineation", 1.0, 0.0, 3.0));
+    gui.add(biosphereCohesion.setup("Cohesion", 0.985714, 0.0, 3.0));
+    gui.add(biosphereBorders.setup("Border", 0.025, 0.0, 1.0));
+    biosphereTimeStep = 0.005;
+    biosphereFlat = 1.0; 
+    biosphereFood = 1.5;
+    
+    gui.loadFromFile("settings.xml");
 }
 
-void ofxEdenData::addMaskPoint(float _x, float _y)
-{
-    ofPoint p;
-    p.set(_x,_y);
-    maskCorners.push_back(p);
+void ofxEdenData::save(){
+    gui.saveToFile("settings.xml");
 }
 
-void ofxEdenData::delMaskPoint(int _nPoint)
-{
-    maskCorners.erase(maskCorners.begin()+_nPoint);
-}
-
-void ofxEdenData::update()
-{
+void ofxEdenData::update(){
 	while( receiver.hasWaitingMessages() ){
 		ofxOscMessage inM;
 		receiver.getNextMessage( &inM );
@@ -205,6 +76,7 @@ void ofxEdenData::update()
         
         // GET INFO
 		if ( inM.getAddress() == "/get/points" ){
+            /*
             ofxOscMessage outM;
             outM.setAddress( "/points" );
             outM.addIntArg(maskCorners.size());
@@ -221,7 +93,7 @@ void ofxEdenData::update()
                 pointOut.addFloatArg(y);
                 
                 sender.sendMessage( pointOut );
-            }
+            }*/
 		} else if ( inM.getAddress() == "/get/altitudes" ){
             ofxOscMessage outM;
             outM.setAddress( "/altitudes" );
@@ -279,22 +151,24 @@ void ofxEdenData::update()
             outM.addFloatArg( biosphereCohesion);       // 8
             sender.sendMessage( outM );
         } else if ( inM.getAddress() == "/get/calibration"){
+            /*
             ofxOscMessage outM;
             outM.setAddress( "/calibration" );
             outM.addFloatArg( center.x / 640 );       // 0
             outM.addFloatArg( center.y / 480 );       // 1
             outM.addFloatArg( scale );          // 2
-            sender.sendMessage( outM );
+            sender.sendMessage( outM );*/
         }
             
         // SET INFO
         if ( inM.getAddress() == "/set/point" ){
+            /*
             int index = inM.getArgAsInt32(0);
             float x = inM.getArgAsFloat(1);
             float y = inM.getArgAsFloat(2);
             
             maskCorners[index].x = x * 640;
-            maskCorners[index].y = y * 480;
+            maskCorners[index].y = y * 480;*/
         } else if ( inM.getAddress() == "/set/lowaltitud" )
             lowAltitude = inM.getArgAsInt32(0);
         else if ( inM.getAddress() == "/set/topaltitud" )
@@ -350,15 +224,20 @@ void ofxEdenData::update()
         else if ( inM.getAddress() == "/set/biospherecohesion")
             biosphereCohesion = inM.getArgAsFloat(0);
         else if ( inM.getAddress() == "/set/biosphereborders")
-            biosphereBorders = inM.getArgAsFloat(0);
+            biosphereBorders = inM.getArgAsFloat(0);/*
         else if ( inM.getAddress() == "/set/scale")
             scale = inM.getArgAsFloat(0);
         else if ( inM.getAddress() == "/set/center"){
             center.x = inM.getArgAsFloat(0) * 640;
             center.y = inM.getArgAsFloat(1) * 480;
-        } else if (inM.getAddress() == "/save")
-            saveXml();
+        } */
+        else if (inM.getAddress() == "/save")
+            save();
         else if (inM.getAddress() == "/reload")
-            loadXml();
+            load();
 	}
+}
+
+void ofxEdenData::draw(){
+    gui.draw();
 }
