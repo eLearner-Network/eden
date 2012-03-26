@@ -6,3 +6,9 @@ src/.DS_Store
 src/.DS_Store
 
 *.app
+
+*.xcodeproj
+
+*.xcconfig
+
+*.plist
