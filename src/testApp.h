@@ -15,6 +15,8 @@
 #include "ofxEdenBiosphere.h"
 #include "ofxEdenTextures.h"
 
+#include "ofxKinectAutoCalibrator.h"
+
 class testApp : public ofBaseApp{
 public:
 	void setup();
@@ -32,9 +34,11 @@ public:
 	void dragEvent(ofDragInfo dragInfo);
 	void gotMessage(ofMessage msg);
     
+    void calibrate();
     void drawTerrain();
     
-    ofxComposer composer;
+    ofxComposer             composer;
+    ofxKinectAutoCalibrator calibrator;
     
     ofxKinect kinect;
     ofxCvGrayscaleImage	blobImage;			// This goes to Atmosphere System
@@ -52,15 +56,15 @@ public:
     // ---------------------------------------------
     ofLight				light;
 	ofEasyCam			cam;
-	ofVbo			vbo;
-	ofVec3f*		pNormals;
-    ofVec3f*		pVertices;      // Vertex Data
-    ofVec2f*		pTexCoords;     // Texture Coordinates
-	int				nVertexCount;	// Vertex Count
+	ofVbo               vbo;
+	ofVec3f*            pNormals;
+    ofVec3f*            pVertices;      // Vertex Data
+    ofVec2f*            pTexCoords;     // Texture Coordinates
+	int                 nVertexCount;	// Vertex Count
     
     ofxEdenData         data;
     ofPoint             mouse;
 	int                 width,height, numPixels;
     
-    bool                bEdit, bTerrain;
+    bool                bEdit, bTerrain, bCalibrated;
 };
