@@ -4,3 +4,4 @@ ofxXmlSettings
 ofxKinect
 ofxOpenCV
 ofxOsc
+ofxGui
