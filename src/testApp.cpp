@@ -6,6 +6,8 @@ void testApp::setup(){
     ofEnableSmoothing();
     ofSetVerticalSync(false);
     
+    ofSetDataPathRoot("data/");
+    
     ofLog(OF_LOG_NOTICE, "Loading ofxComposer");
     composer.load("config.xml");
     
