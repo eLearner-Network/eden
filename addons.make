@@ -1,7 +1,6 @@
-ofxGLEditor
 ofxComposer
-ofxXmlSettings
-ofxKinect
-ofxOpenCV
-ofxOsc
+ofxGLEditor
 ofxGui
+ofxKinect
+ofxOpenCv
+ofxOsc
