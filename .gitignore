@@ -12,3 +12,6 @@ src/.DS_Store
 *.xcconfig
 
 *.plist
+
+bin/libs/
+obj/
