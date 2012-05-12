@@ -15,3 +15,4 @@ src/.DS_Store
 
 bin/libs/
 obj/
+bin/eden_debug
