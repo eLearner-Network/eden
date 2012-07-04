@@ -6,7 +6,7 @@ void testApp::setup(){
     ofEnableSmoothing();
     ofSetVerticalSync(false);
     
-    ofSetDataPathRoot("data/");
+    //ofSetDataPathRoot("data/");
     
     ofLog(OF_LOG_NOTICE, "Loading ofxComposer");
     composer.load("config.xml");
@@ -313,15 +313,15 @@ void testApp::drawTerrain(){
 
 //-------------------------------------------------------------- EVENTS
 void testApp::keyPressed(int key){
-    if( key == OF_KEY_F3 ){
+    if( key == 'e' ){
 		bEdit = !bEdit;
 	} else if ( ( key >= 48 ) && ( key <= 57 ) ) {
         data.activeLayer = key - 48;
-    } else if (key == OF_KEY_F2){
+    } else if (key == 't'){
         bTerrain = !bTerrain;
-    } else if (key == OF_KEY_F1){
+    } else if (key == 'f'){
         ofToggleFullscreen();
-    } else if (key == OF_KEY_F6){
+    } else if (key == 'c'){
         calibrate();
     }
 }
@@ -352,9 +352,10 @@ void testApp::gotMessage(ofMessage msg){
 
 
 void testApp::dragEvent(ofDragInfo dragInfo){
+    /*
     if( dragInfo.files.size() > 0 ){
 		for(int i = 0; i < dragInfo.files.size(); i++){
             composer.addPatch( dragInfo.files[i], dragInfo.position );
 		}
-	}
+	}*/
 }

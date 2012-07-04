@@ -3,5 +3,4 @@ ofxGLEditor
 ofxGui
 ofxKinect
 ofxOpenCv
-ofxOsc
 ofxXmlSettings

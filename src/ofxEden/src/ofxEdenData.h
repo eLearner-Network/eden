@@ -12,10 +12,6 @@
 
 #include "ofMain.h"
 #include "ofxGui.h"
-#include "ofxOsc.h"
-
-#define SERVER_PORT 1984
-#define CLIENT_PORT 1985
 
 class ofxEdenData {
 public:
@@ -28,11 +24,6 @@ public:
     
     ofxPanel        gui;
         
-    ofxOscReceiver  receiver;
-    ofxOscSender    sender;
-    string          outHost;
-    int             outPort;
-	
     ofxIntSlider    topAltitude,lowAltitude;
     int             totalFrames, activeLayer;
 	
