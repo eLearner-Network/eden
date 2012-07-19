@@ -66,5 +66,5 @@ public:
     ofPoint             mouse;
 	int                 width,height, numPixels;
     
-    bool                bEdit, bTerrain, bCalibrated;
+    bool                bEdit, bTerrain, bCalibrated,bMouse;
 };

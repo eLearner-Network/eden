@@ -9,7 +9,7 @@
 #ifndef OFXEDENBIOSPHERE
 #define OFXEDENBIOSPHERE
 
-//#define LIFEGLOW
+#define LIFEGLOW
 
 #include "ofMain.h"
 #include "ofxEdenSphere.h"

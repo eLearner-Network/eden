@@ -491,6 +491,8 @@ void ofxFlocking::update(ofTexture &normalTex, ofTexture &obstaclesTex, ofTextur
     renderShader.end();
     renderFbo.end();
 
+    ofEnableBlendMode( OF_BLENDMODE_ALPHA );
+    
     // Switch buffers
     frame++;
 }

@@ -6,7 +6,7 @@ void testApp::setup(){
     ofEnableSmoothing();
     ofSetVerticalSync(false);
     
-    //ofSetDataPathRoot("data/");
+    ofSetDataPathRoot("data/");
     
     ofLog(OF_LOG_NOTICE, "Loading ofxComposer");
     composer.load("config.xml");
@@ -52,9 +52,14 @@ void testApp::setup(){
 	//light.setDiffuseColor(ofColor(192, 160, 128));
 	cam.setDistance(3000);
     
-    bEdit = true;
+    bEdit = false;
     bTerrain = false;
     bCalibrated = true;
+    bMouse = false;
+    
+    ofHideCursor();
+    ofSetFullscreen(true);
+    composer.setEdit(false);
 }
 
 void testApp::calibrate(){
@@ -323,6 +328,14 @@ void testApp::keyPressed(int key){
         ofToggleFullscreen();
     } else if (key == 'c'){
         calibrate();
+    } else if (key == 'm'){
+        bMouse = !bMouse;
+        
+        if (bMouse){
+            ofShowCursor();
+        } else {
+            ofHideCursor();
+        }
     }
 }
 
