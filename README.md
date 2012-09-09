@@ -1,4 +1,6 @@
-# Eden
+# [Eden](http://patriciogonzalezvivo.com/2011/efectomariposa/)
+[![eden](http://patriciogonzalezvivo.com/2011/efectomariposa/thumb.jpg)](http://patriciogonzalezvivo.com/2011/efectomariposa/)
+
 
 Eden it´s migrating to ofxEden. A openFrameworks addon that simulates the a ecosystem from the surface of a sandBox.
 
