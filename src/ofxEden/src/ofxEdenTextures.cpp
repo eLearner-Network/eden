@@ -135,17 +135,6 @@ void ofxEdenTextures::update(ofTexture& hydroText, ofxEdenBiosphere& bio, ofxEde
     geo.getChange().draw(0,0,width,height);
     water.end();
     
-    // Generate masking contour
-    fbo[0].begin();
-    ofClear(0,255);
-    ofBeginShape();
-    ofSetColor(255, 255, 255);
-    for(int i = 0; i < data->maskCorners.size(); i++ ){
-        ofVertex(data->maskCorners[i].x*2.0,data->maskCorners[i].y*2.0);
-    }
-    ofEndShape(true);
-    fbo[0].end();
-    
     // Generate multi Texturing on x2 scale
 	ofEnableAlphaBlending();
 	fbo[1].begin();
@@ -180,10 +169,6 @@ void ofxEdenTextures::update(ofTexture& hydroText, ofxEdenBiosphere& bio, ofxEde
     drawFrame(width, height);
     
 	shader.end();
-    
-    ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
-    fbo[0].draw(0,0);
-    ofDisableBlendMode();
     
 #ifdef LIFEGLOW // Add lifeGlow
     ofEnableBlendMode(OF_BLENDMODE_ADD);

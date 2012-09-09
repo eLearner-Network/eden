@@ -1,0 +1,6 @@
+ofxComposer
+ofxGLEditor
+ofxGui
+ofxKinect
+ofxOpenCv
+ofxXmlSettings

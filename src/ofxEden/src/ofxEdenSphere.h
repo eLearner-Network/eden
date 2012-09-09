@@ -16,7 +16,6 @@
 class ofxEdenSphere {
 public:
 	ofxEdenSphere(){ frame = 0; data = NULL; };
-	~ofxEdenSphere(){ delete data; }
 	
 	void linkData(ofxEdenData* _data){ data = _data; };
 	void loadShader(string toShaderPath){ shader.load("",toShaderPath);};
