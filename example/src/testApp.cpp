@@ -6,7 +6,7 @@ void testApp::setup(){
     ofEnableSmoothing();
     ofSetVerticalSync(false);
     
-    ofSetDataPathRoot("data/");
+//    ofSetDataPathRoot("data/");
     
     ofLog(OF_LOG_NOTICE, "Loading ofxComposer");
     composer.load("config.xml");
@@ -328,6 +328,8 @@ void testApp::keyPressed(int key){
         ofToggleFullscreen();
     } else if (key == 'c'){
         calibrate();
+    } else if (key == 's'){
+        composer.save("config.xml");
     } else if (key == 'm'){
         bMouse = !bMouse;
         
